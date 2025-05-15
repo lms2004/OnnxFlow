@@ -1,6 +1,8 @@
 #include "alloc.h"
+#include <memory>
+
 
 int main(){
-    print(1);
-    return 0;
+    std::allocator<int> alloc;
+    int* p = alloc.allocate(5);
 }

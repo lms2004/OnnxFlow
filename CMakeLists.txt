@@ -5,6 +5,9 @@ project(ONNXFLOW)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_BUILD_TYPE Debug) # 启用调试模式
+
+
 # Download GoogleTest using FetchContent
 include(FetchContent)
 FetchContent_Declare(
@@ -15,12 +18,18 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)  # For Windows compatibility
 FetchContent_MakeAvailable(googletest)
 
 
+# --------------------------------- 设置路径 ---------------------------------
 
 set(ONNXFLOW_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core/include")
+set(ONNXFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core/source")
+set(ONNXFLOW_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
 
+
+# 获取源代码和测试代码的 .cpp 文件
+file(GLOB SOURCES CONFIGURE_DEPENDS "${ONNXFLOW_SOURCE_DIR}/*.cpp")
 
 # --------------------------------- 主程序配置 ---------------------------------
-add_executable(ONNXFLOW main.cpp)
+add_executable(ONNXFLOW main.cpp ${SOURCES}) # ${SOURCES}
 target_include_directories(ONNXFLOW
   PRIVATE
     ${ONNXFLOW_INCLUDE_DIR}
@@ -30,9 +39,9 @@ target_include_directories(ONNXFLOW
 # --------------------------------- 测试程序配置 ---------------------------------
 enable_testing()
 
-# 添加测试可执行文件（test_alloc）
-add_executable(test_alloc test/test_alloc.cpp)
 
+# 添加测试可执行文件（test_alloc）
+add_executable(test_alloc test/test_alloc.cpp ${SOURCES}) 
 target_include_directories(test_alloc
   PRIVATE
     ${ONNXFLOW_INCLUDE_DIR}
