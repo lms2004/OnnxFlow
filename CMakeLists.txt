@@ -32,6 +32,12 @@ enable_testing()
 
 # 添加测试可执行文件（test_alloc）
 add_executable(test_alloc test/test_alloc.cpp)
+
+target_include_directories(test_alloc
+  PRIVATE
+    ${ONNXFLOW_INCLUDE_DIR}
+)
+
 target_link_libraries(test_alloc PRIVATE GTest::gtest_main)  # 注意小写
 
 # 自动发现并注册测试用例
