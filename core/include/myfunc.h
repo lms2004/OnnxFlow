@@ -1,13 +1,6 @@
 #pragma once  // 确保头文件只会被包含一次
+#include "debug.h"
 
-#include <stdlib.h>
-#include <cstdio>
-#include <iostream>
-
-/* ---------- Log ---------- */
-
-// 错误打印函数声明
-void printError(const char* errorMessage, const char* fileName, int lineNumber);
 
 /* ---------- CPU ---------- */
 
