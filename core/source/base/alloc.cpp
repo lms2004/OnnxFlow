@@ -1,9 +1,7 @@
 #include "alloc.h"
 
-std::shared_ptr<CPUAllocator> CPUAllocatorSingleton::instance = nullptr;  // 定义静态成员变量
-std::shared_ptr<CUDADeviceAllocator> CUDADeviceAllocatorSingleton::instance = nullptr;  // 定义静态成员变量
 
-
+std::shared_ptr<DeviceAllocator> DeviceAllocatorSingleton::instance = nullptr;
 
 void* CPUAllocator::allocate(size_t n)const {
     return Malloc(n);

@@ -1,4 +1,6 @@
 #pragma once  // 确保头文件只会被包含一次
+#ifndef __MYFUNC_H__
+#define __MYFUNC_H__
 #include "debug.h"
 
 
@@ -12,3 +14,5 @@ void* Malloc(size_t size);
 
 void CudaMalloc(void** _devPtr, size_t _size);
 void CudaGetDevice(int *device);
+
+#endif// __MYFUNC_H__

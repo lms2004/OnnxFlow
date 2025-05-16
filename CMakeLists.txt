@@ -32,8 +32,8 @@ if (NOT CUDA_FOUND)
   message(FATAL_ERROR "CUDA 未找到！请确保 CUDA 已安装并可用。")
 endif()
 
-# 获取源代码和测试的 .cpp 文件
-file(GLOB SOURCES CONFIGURE_DEPENDS "${ONNXFLOW_SOURCE_DIR}/*.cpp")
+# 获取 base 目录下的所有源文件
+file(GLOB SOURCES CONFIGURE_DEPENDS "${ONNXFLOW_SOURCE_DIR}/base/*.cpp")
 
 
 
@@ -41,7 +41,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS "${ONNXFLOW_SOURCE_DIR}/*.cpp")
 add_executable(ONNXFLOW main.cpp ${SOURCES})
 target_include_directories(ONNXFLOW
   PRIVATE
-    ${ONNXFLOW_INCLUDE_DIR}
+    ${ONNXFLOW_INCLUDE_DIR}/base
     ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
 )
 
@@ -52,7 +52,7 @@ enable_testing()
 add_executable(test_alloc test/test_alloc.cpp ${SOURCES})
 target_include_directories(test_alloc
   PRIVATE
-    ${ONNXFLOW_INCLUDE_DIR}
+    ${ONNXFLOW_INCLUDE_DIR}/base
     ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
 )
 

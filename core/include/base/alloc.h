@@ -11,34 +11,24 @@
 
 class DeviceAllocator {
 public:
-    explicit DeviceAllocator(DeviceType device_type){};
+    explicit DeviceAllocator(DeviceType device_type) : device_type_(device_type) {}
 
     virtual void* allocate(size_t n) const = 0;
     virtual void deallocate(void** p) = 0;
     ~DeviceAllocator() = default;
+private:
+    DeviceType device_type_;
 };
 
 /* ----- CPU ------ */
 class CPUAllocator : public DeviceAllocator {
 public:
-    explicit CPUAllocator(DeviceType device_type) : DeviceAllocator(device_type) {}
+    explicit CPUAllocator(): DeviceAllocator(DeviceType::kDeviceCPU) {};
 
     void* allocate(size_t n) const override;
     void deallocate(void** p) override;
 };
 
-class CPUAllocatorSingleton {   
-public:
-    static std::shared_ptr<CPUAllocator> getInstance() {
-        if(instance == nullptr) {
-            instance = std::make_shared<CPUAllocator>(DeviceType::kDeviceCPU);
-        }
-        return instance;
-    }
-
-private:
-    static std::shared_ptr<CPUAllocator> instance;
-};
 
 /* ----- GPU ------ */
 class CUDADeviceAllocator : public DeviceAllocator {
@@ -51,15 +41,21 @@ class CUDADeviceAllocator : public DeviceAllocator {
 };
 
 
-class CUDADeviceAllocatorSingleton {
+class DeviceAllocatorSingleton {
  public:
-  static std::shared_ptr<CUDADeviceAllocator> getInstance() {
-    if (instance == nullptr) {
-      instance = std::make_shared<CUDADeviceAllocator>();
+  static std::shared_ptr<DeviceAllocator> getInstance(DeviceType device_type_) {
+    if (device_type_ == DeviceType::kDeviceCPU) {
+      if (!instance) {
+        instance = std::make_shared<CPUAllocator>();
+      }
+    } else if (device_type_ == DeviceType::kDeviceCUDA) {
+      if (!instance) {
+        instance = std::make_shared<CUDADeviceAllocator>();
+      }
     }
     return instance;
   }
 
  private:
-  static std::shared_ptr<CUDADeviceAllocator> instance;
+  static std::shared_ptr<DeviceAllocator> instance;
 };
