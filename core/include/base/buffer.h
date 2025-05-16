@@ -55,8 +55,4 @@ private:
     DeviceType device_type_ = DeviceType::kDeviceUnknown;
     std::shared_ptr<DeviceAllocator> allocator_;
 };
-
-
-
-
 #endif

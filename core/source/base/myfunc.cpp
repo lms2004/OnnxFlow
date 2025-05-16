@@ -20,23 +20,19 @@ void* Malloc(size_t size){
     return ptr;
 }
 
-void* Memcpy( void* dest, const void* src, std::size_t count ){
-    if(dest == NULL || src == NULL){
+void Memcpy(void* dest, const void* src, std::size_t count) {
+    if (dest == NULL || src == NULL) {
         Error("memcpy dest or src is NULL");
-        return NULL;
+        return;  // 立即返回，避免继续执行
     }
-    if(count == 0){
+    if (count == 0) {
         Error("memcpy count is 0");
-        return NULL;
+        return;  // 立即返回，避免继续执行
     }
-    
-    void* ret = memcpy(dest, src, count);
-    if(ret == NULL){
-        Error("memcpy failed");
-        return NULL;
-    }
-    return ret;
+
+    std::memcpy(dest, src, count);
 }
+
 
 /* ----------- GPU ---------- */
 void CudaMalloc(void** _devPtr, size_t _size){

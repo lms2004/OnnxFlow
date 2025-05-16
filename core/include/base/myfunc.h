@@ -8,7 +8,7 @@
 
 // Malloc 函数声明
 void* Malloc(size_t size);
-void* Memcpy( void* dest, const void* src, std::size_t count );
+void Memcpy( void* dest, const void* src, std::size_t count );
 
 /* ----------- GPU ---------- */
 

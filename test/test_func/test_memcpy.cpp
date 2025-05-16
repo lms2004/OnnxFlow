@@ -1,46 +1,59 @@
 #include <gtest/gtest.h>
-#include <cstring>  // For memcpy
+#include <sstream>
 #include <iostream>
 #include "myfunc.h"
 
-// Memcpy 测试类
-class MemcpyTest : public ::testing::Test {
-protected:
-    // 如果需要设置其他内容
-    void SetUp() override {}
+// 测试 Memcpy 的函数
+TEST(MemcpyTest, HandlesNullDest) {
+    // 捕获 stderr 输出
+    ::testing::internal::CaptureStderr();
+    
+    char source[] = "Hello, World!";
+    void* dest = NULL;
+    Memcpy(dest, source, 13);  // 应该打印错误日志
+    
+    // 获取捕获的日志内容
+    std::string output = ::testing::internal::GetCapturedStderr();
 
-    void TearDown() override {}
-};
+    // 验证错误日志内容
+    EXPECT_TRUE(output.find("memcpy dest or src is NULL") != std::string::npos);
+}
 
-// 测试正常的 memcpy 操作
-TEST_F(MemcpyTest, CopyDataSuccessfully) {
-    const char* src = "Hello, World!";
+TEST(MemcpyTest, HandlesNullSrc) {
+    // 捕获 stderr 输出
+    ::testing::internal::CaptureStderr();
+    
+    char* source = NULL;
     char dest[20];
+    Memcpy(dest, source, 13);  // 应该打印错误日志
+    
+    // 获取捕获的日志内容
+    std::string output = ::testing::internal::GetCapturedStderr();
 
-    // 执行 memcpy 操作
-    void* result = Memcpy(dest, src, strlen(src) + 1);  // +1 是为了复制字符串的结束符
-    EXPECT_NE(result, nullptr);  // 确保返回值不为 nullptr
-    EXPECT_STREQ(dest, src);  // 确保 dest 的内容和 src 一致
+    // 验证错误日志内容
+    EXPECT_TRUE(output.find("memcpy dest or src is NULL") != std::string::npos);
 }
 
-// 测试目标指针为 NULL 的情况
-TEST_F(MemcpyTest, DestinationIsNull) {
-    const char* src = "Hello, World!";
-    void* result = Memcpy(nullptr, src, strlen(src) + 1);
-    EXPECT_EQ(result, nullptr);  // 确保返回值为 nullptr
-}
-
-// 测试源指针为 NULL 的情况
-TEST_F(MemcpyTest, SourceIsNull) {
+TEST(MemcpyTest, HandlesZeroCount) {
+    // 捕获 stderr 输出
+    ::testing::internal::CaptureStderr();
+    
+    char source[] = "Hello, World!";
     char dest[20];
-    void* result = Memcpy(dest, nullptr, strlen(dest) + 1);
-    EXPECT_EQ(result, nullptr);  // 确保返回值为 nullptr
+    Memcpy(dest, source, 0);  // 应该打印错误日志
+    
+    // 获取捕获的日志内容
+    std::string output = ::testing::internal::GetCapturedStderr();
+    
+    // 验证错误日志内容
+    EXPECT_TRUE(output.find("memcpy count is 0") != std::string::npos);  // 确保输出包含该日志
 }
 
-// 测试复制字节数为 0 的情况
-TEST_F(MemcpyTest, CountIsZero) {
-    char dest[20];
-    const char* src = "Hello, World!";
-    void* result = Memcpy(dest, src, 0);
-    EXPECT_EQ(result, nullptr);  // 确保返回值为 nullptr
+TEST(MemcpyTest, HandlesValidMemcpy) {
+    char source[] = "Hello, World!";
+    char dest[20] = {0};
+    Memcpy(dest, source, 13);  // 应该成功复制
+
+    EXPECT_STREQ(dest, "Hello, World!");  // 验证复制结果
 }
+
