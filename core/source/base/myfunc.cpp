@@ -33,6 +33,18 @@ void Memcpy(void* dest, const void* src, std::size_t count) {
     std::memcpy(dest, src, count);
 }
 
+void Memset(void* dest, int value, std::size_t count) {
+    if (dest == NULL) {
+        Error("memset dest is NULL");
+        return;  // 立即返回，避免继续执行
+    }
+    if (count == 0) {
+        Error("memset count is 0");
+        return;  // 立即返回，避免继续执行
+    }
+
+    std::memset(dest, value, count);
+}
 
 /* ----------- GPU ---------- */
 void CudaMalloc(void** _devPtr, size_t _size){
@@ -62,3 +74,50 @@ void CudaGetDevice(int *device){
         return;
     }
 }
+
+void CudaMemcpy(void *dst, const void *src, size_t count, enum cudaMemcpyKind kind){
+    cudaError_t Error = cudaMemcpy(dst, src, count, kind);
+    if(Error!= cudaSuccess){
+        Error("cudaMemcpy failed");
+        return;
+    }
+}
+
+void CudaMemcpyAsync (void* dst, const void* src, size_t count, cudaMemcpyKind kind, cudaStream_t stream){
+    cudaError_t Error = cudaMemcpyAsync(dst, src, count, kind, stream);
+    if(Error!= cudaSuccess){
+        Error("cudaMemcpyAsync failed");
+        return;
+    }
+}
+
+void CudaFree(void* _devPtr){
+    cudaError_t Error = cudaFree(_devPtr);
+    if(Error!= cudaSuccess){
+        Error("cudaFree failed");
+        return;
+    }
+}
+void CudaDeviceSynchronize(){
+    cudaError_t Error = cudaDeviceSynchronize();
+    if(Error!= cudaSuccess){
+        Error("cudaDeviceSynchronize failed");
+        return;
+    }
+}
+
+void CudaMemset(void* ptr, int value, size_t count){
+    cudaError_t Error = cudaMemset(ptr, value, count);
+    if(Error!= cudaSuccess){
+        Error("cudaMemset failed");
+        return;
+    }
+}
+void CudaMemsetAsync(void* ptr, int value, size_t count, cudaStream_t stream){
+    cudaError_t Error = cudaMemsetAsync(ptr, value, count, stream);
+    if(Error!= cudaSuccess){
+        Error("cudaMemsetAsync failed");
+        return;
+    }
+}
+

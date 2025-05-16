@@ -24,6 +24,12 @@ enum class DataType : uint8_t {
   kDataTypeInt32 = 3,
 };
 
+enum class MemcpyKind {
+  kMemcpyCPU2CPU = 0,
+  kMemcpyCPU2CUDA = 1,
+  kMemcpyCUDA2CPU = 2,
+  kMemcpyCUDA2CUDA = 3,
+};
 
 // 这个类的作用是禁止对象的拷贝构造和赋值操作
 // 参考： https://stackoverflow.com/questions/2173746/how-do-i-make-this-c-object-non-copyable

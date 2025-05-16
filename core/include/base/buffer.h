@@ -12,7 +12,7 @@
  * 1. 强制通过 create() 创建对象，确保生命周期由 shared_ptr 管理
  * 2. 参数化构造逻辑，支持动态资源分配策略
  */
-class Buffer : public NoCopyable, std::enable_shared_from_this<Buffer>{
+class Buffer : public NoCopyable, public std::enable_shared_from_this<Buffer>{ // 每个基类前都要 public 继承
 public:
     ~Buffer();
 
@@ -26,7 +26,9 @@ public:
         return shared_from_this(); // 返回 weak_ptr
     }
 
+    void allocate();
 
+    // ---------------------- copy func ------------------------------
 
     void copy_from(const Buffer& buffer) const;
     void copy_from(const Buffer* buffer) const;

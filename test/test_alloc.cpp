@@ -56,3 +56,52 @@ TEST(CUDADeviceAllocatorTest, AllocateErrorValue){
     void* ptr = allocator->allocate(-1);
     ASSERT_EQ(ptr, nullptr);  // 确保分配零字节内存返回 nullptr
 }
+
+
+// 测试 DeviceAllocator 的 memcpy 功能
+TEST(DeviceAllocatorTest, MemcpyTest) {
+    std::shared_ptr<DeviceAllocator> allocator = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
+
+    // 分配源和目标内存
+    size_t byte_size = 26;
+    void* src_ptr = allocator->allocate(byte_size);
+    void* dest_ptr = allocator->allocate(byte_size);
+    
+    // 初始化源内存
+    char a = 'a';
+    for (size_t i = 0; i < byte_size; i++) {
+        ((char*)src_ptr)[i] = a + i;  // 设置字符值
+    }
+
+    // 使用 memcpy 进行内存复制
+    allocator->memcpy(src_ptr, dest_ptr, byte_size, MemcpyKind::kMemcpyCPU2CPU, nullptr, false);
+    
+    // 验证目标内存内容
+    for (size_t i = 0; i < byte_size; i++) {
+        ASSERT_EQ(((char*)dest_ptr)[i], a + i);  // 验证每个字符值
+    }
+
+    // 释放内存
+    allocator->deallocate(&src_ptr);
+    allocator->deallocate(&dest_ptr);
+}
+
+// 测试 DeviceAllocator 的 memset_zero 功能
+TEST(DeviceAllocatorTest, MemsetZeroTest) {
+    std::shared_ptr<DeviceAllocator> allocator = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
+
+    // 分配内存
+    size_t byte_size = 26;
+    void* ptr = allocator->allocate(byte_size);
+    
+    // 使用 memset_zero 清空内存
+    allocator->memset_zero(ptr, byte_size, nullptr, false);
+    
+    // 验证内存是否被清空
+    for (size_t i = 0; i < byte_size; i++) {
+        ASSERT_EQ(((char*)ptr)[i], 0);  // 验证每个字节是否为 0
+    }
+
+    // 释放内存
+    allocator->deallocate(&ptr);
+}

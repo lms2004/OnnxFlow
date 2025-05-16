@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BUILD_TYPE Debug)  # 启用调试模式
 
+# set(TEST_FUNC ON)  # 启用测试 myfunc
+
+
 # 使用 FetchContent 下载 GoogleTest
 include(FetchContent)
 FetchContent_Declare(
@@ -66,19 +69,26 @@ foreach(TEST_FILE ${TEST_SOURCES})
   gtest_discover_tests(test_${TEST_NAME})
 endforeach()
 
-# 为每个 test_func 目录下的测试文件创建一个独立的测试可执行文件
-foreach(TEST_FILE ${TEST_MYFUNC_SOURCES})
-  get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
-  add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
-  target_include_directories(test_${TEST_NAME}
-    PRIVATE
-      ${ONNXFLOW_INCLUDE_DIR}/base
-      ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
-  )
-  target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
 
-  # 自动发现并注册测试用例
-  include(GoogleTest)
-  gtest_discover_tests(test_${TEST_NAME})
-endforeach()
+# 判断 TEST_FUNC 是否启用
+if(TEST_FUNC)
+  # 为每个 test_func 目录下的测试文件创建一个独立的测试可执行文件
+  foreach(TEST_FILE ${TEST_MYFUNC_SOURCES})
+    get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
+    add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
+    target_include_directories(test_${TEST_NAME}
+      PRIVATE
+        ${ONNXFLOW_INCLUDE_DIR}/base
+        ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
+    )
+    target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
+
+    # 自动发现并注册测试用例
+    include(GoogleTest)
+    gtest_discover_tests(test_${TEST_NAME})
+  endforeach()
+else()
+    message(STATUS "TEST_FUNC is disabled. Skipping test creation.")
+endif()
+
 
