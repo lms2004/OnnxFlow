@@ -22,7 +22,6 @@ set(ONNXFLOW_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core/include")
 set(ONNXFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core/source")
 set(ONNXFLOW_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
 
-
 # --------------------------------- 全局配置 ---------------------------------
 # 自动查找 CUDA 包
 find_package(CUDA)
@@ -35,8 +34,6 @@ endif()
 # 获取 base 目录下的所有源文件
 file(GLOB SOURCES CONFIGURE_DEPENDS "${ONNXFLOW_SOURCE_DIR}/base/*.cpp")
 
-
-
 # --------------------------------- 主程序配置 ---------------------------------
 add_executable(ONNXFLOW main.cpp ${SOURCES})
 target_include_directories(ONNXFLOW
@@ -44,25 +41,44 @@ target_include_directories(ONNXFLOW
     ${ONNXFLOW_INCLUDE_DIR}/base
     ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
 )
+target_link_libraries(ONNXFLOW PRIVATE ${CUDA_LIBRARIES})  # 新增这行
 
 # --------------------------------- 测试程序配置 ---------------------------------
 enable_testing()
 
-# 添加测试可执行文件（test_alloc）
-add_executable(test_alloc test/test_alloc.cpp ${SOURCES})
-target_include_directories(test_alloc
-  PRIVATE
-    ${ONNXFLOW_INCLUDE_DIR}/base
-    ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
-)
+# 获取 test 目录下的所有 .cpp 文件
+file(GLOB TEST_SOURCES "${ONNXFLOW_TEST_DIR}/*.cpp")
+file(GLOB TEST_MYFUNC_SOURCES "${ONNXFLOW_TEST_DIR}/test_func/*.cpp")
 
+# 为每个测试文件创建一个独立的测试可执行文件
+foreach(TEST_FILE ${TEST_SOURCES})
+  get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
+  add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
+  target_include_directories(test_${TEST_NAME}
+    PRIVATE
+      ${ONNXFLOW_INCLUDE_DIR}/base
+      ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
+  )
+  target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
 
-# --------------------------------- 链接配置 ---------------------------------
+  # 自动发现并注册测试用例
+  include(GoogleTest)
+  gtest_discover_tests(test_${TEST_NAME})
+endforeach()
 
-# 链接 CUDA 库
-target_link_libraries(ONNXFLOW PRIVATE ${CUDA_LIBRARIES})
-target_link_libraries(test_alloc PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
+# 为每个 test_func 目录下的测试文件创建一个独立的测试可执行文件
+foreach(TEST_FILE ${TEST_MYFUNC_SOURCES})
+  get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
+  add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
+  target_include_directories(test_${TEST_NAME}
+    PRIVATE
+      ${ONNXFLOW_INCLUDE_DIR}/base
+      ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
+  )
+  target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
 
-# 自动发现并注册测试用例
-include(GoogleTest)
-gtest_discover_tests(test_alloc)
+  # 自动发现并注册测试用例
+  include(GoogleTest)
+  gtest_discover_tests(test_${TEST_NAME})
+endforeach()
+

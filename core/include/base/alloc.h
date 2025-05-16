@@ -15,6 +15,11 @@ public:
 
     virtual void* allocate(size_t n) const = 0;
     virtual void deallocate(void** p) = 0;
+    
+    DeviceType device_type() const {
+        return device_type_;
+    }
+
     ~DeviceAllocator() = default;
 private:
     DeviceType device_type_;
