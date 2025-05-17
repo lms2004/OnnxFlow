@@ -8,6 +8,9 @@
 
 #include "base.h"
 #include "myfunc.h"
+using mybase::DeviceType;
+using mybase::DataType;
+using mybase::MemcpyKind;
 
 class DeviceAllocator {
 public:

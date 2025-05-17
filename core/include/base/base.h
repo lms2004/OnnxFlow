@@ -11,6 +11,8 @@
     - kDeviceCPU：CPU 设备。
     - kDeviceCUDA：CUDA 设备。
 */
+namespace mybase{
+
 enum class DeviceType : uint8_t {
   kDeviceUnknown = 0,
   kDeviceCPU = 1,
@@ -78,5 +80,5 @@ class NoCopyable {
 
   NoCopyable& operator=(const NoCopyable&) = delete;
 };
-
+}
 #endif

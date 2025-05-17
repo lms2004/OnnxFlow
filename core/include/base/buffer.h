@@ -12,7 +12,10 @@
  * 1. 强制通过 create() 创建对象，确保生命周期由 shared_ptr 管理
  * 2. 参数化构造逻辑，支持动态资源分配策略
  */
-class Buffer : public NoCopyable, public std::enable_shared_from_this<Buffer>{ // ptr is nullptr , allocator_ 非空，则分配内存
+using mybase::DeviceType;
+using mybase::DataType;
+
+class Buffer : public mybase::NoCopyable, public std::enable_shared_from_this<Buffer>{ // ptr is nullptr , allocator_ 非空，则分配内存
 public: // 每个基类前都要 public 继承
 
     ~Buffer();

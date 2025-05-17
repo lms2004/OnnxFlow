@@ -1,7 +1,7 @@
 #ifndef OP_LAYER_H
 #define OP_LAYER_H
 
-#include "base.h"
+#include "tensor.h"
 #include <string>
 
 enum class LayerType {
