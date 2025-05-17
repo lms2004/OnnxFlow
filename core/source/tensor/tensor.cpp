@@ -77,13 +77,10 @@ void Tensor::reset(DataType data_type, const std::vector<int32_t>& dims) {
   this->buffer_ = nullptr;
 }
 
-/*
-* reshape：有返回值，所谓有返回值，即不对原始多维数组进行修改；
-* resize：无返回值，所谓有返回值，即会对原始多维数组进行修改；
-*/
 
-// 修整 Tensor 的维度，超出原有内存大小时，报错
 
+// 修整 Tensor 的维度，不对原始多维数组进行修改；
+// 例如，将一个 3x4 的矩阵 reshape 为 2x6 的矩阵，不会改变原始矩阵的形状。
 void Tensor::reshape(const std::vector<int32_t>& dims) {
   size_t size = reduce_dimension(dims.begin(), dims.end(), 1);
   // 外部内存，直接修改dims_和size_
@@ -101,7 +98,9 @@ void Tensor::reshape(const std::vector<int32_t>& dims) {
   this->dims_ = dims;
   this->size_ = size;
 }
-
+// 修整 Tensor 的维度，对原始多维数组进行修改；
+// 例如，将一个 3x4 resize 为 2x6 的矩阵，改变原始矩阵的形状。
+// 例如，将一个 3x4 resize 为 9x4 的矩阵，扩容原始矩阵空间
 void Tensor::resize(const std::vector<int32_t>& dims) {
   size_t size = reduce_dimension(dims.begin(), dims.end(), 1);
   // 外部内存，直接修改dims_和size_
