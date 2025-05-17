@@ -4,7 +4,7 @@
 
 
 #include <cstdint>
-
+#include <cstddef>
 /*
   成员（前缀 k 通常用于表示常量或枚举值( Google 的编程风格指南）：
     - kDeviceUnknown：未知设备。
@@ -19,10 +19,45 @@ enum class DeviceType : uint8_t {
 
 enum class DataType : uint8_t {
   kDataTypeUnknown = 0,
-  kDataTypeFp32 = 1,
-  kDataTypeInt8 = 2,
-  kDataTypeInt32 = 3,
+  kDataTypeFp32,
+  kDataTypeInt8,
+  kDataTypeInt32,
+  kDataTypeInt64,
+  kDataTypeInt16 ,
+  kDataTypeUint8,
+  kDataTypeUint16,
+  kDataTypeUint32,
+  kDataTypeUint64,
+  kDataTypeBool,
 };
+
+inline size_t DataTypeSize(DataType data_type) {
+  switch (data_type) {
+    case DataType::kDataTypeFp32:
+      return sizeof(float);
+    case DataType::kDataTypeInt8:
+      return sizeof(int8_t);
+    case DataType::kDataTypeInt32:
+      return sizeof(int32_t);
+    case DataType::kDataTypeInt64:
+      return sizeof(int64_t);
+    case DataType::kDataTypeInt16:
+      return sizeof(int16_t);
+    case DataType::kDataTypeUint8:
+      return sizeof(uint8_t);
+    case DataType::kDataTypeUint16:
+      return sizeof(uint16_t);
+    case DataType::kDataTypeUint32:
+      return sizeof(uint32_t);
+    case DataType::kDataTypeUint64:
+      return sizeof(uint64_t);
+    case DataType::kDataTypeBool:
+      return sizeof(bool);
+    default:
+      return 0;  // Unknown data type
+  }
+}
+
 
 enum class MemcpyKind {
   kMemcpyCPU2CPU = 0,

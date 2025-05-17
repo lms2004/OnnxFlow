@@ -65,6 +65,8 @@
         "unordered_set": "cpp",
         "fstream": "cpp",
         "iomanip": "cpp",
-        "version": "cpp"
+        "version": "cpp",
+        "buffer": "cpp",
+        "netfwd": "cpp"
     }
 }

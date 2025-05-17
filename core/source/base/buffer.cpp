@@ -36,7 +36,7 @@ void Buffer::allocate() {
 }
 
 
-// ---------------------- copy func ------------------------------
+// ---------------------- core func ------------------------------
 
 void Buffer::copy_from(const Buffer& buffer) const {
   Assert(buffer.ptr_ != nullptr || allocator_ != nullptr,
@@ -120,4 +120,8 @@ DeviceType Buffer::device_type() const {
 }
 bool Buffer::is_external() const {
   return use_external_;
+}
+
+std::shared_ptr<DeviceAllocator> Buffer::allocator() const {
+  return allocator_;
 }

@@ -20,26 +20,50 @@ enum class LayerType {
 
 
 class BaseLayer {
-public:
-    explicit BaseLayer(DeviceType device_type, LayerType layer_type, DataType data_type,
-                        std::string layer_name = "")
-            : device_type_(device_type),
-            layer_type_(layer_type),
-            data_type_(data_type),
-            layer_name_(layer_name) {}
+ public:
+  explicit BaseLayer(DeviceType device_type, LayerType layer_type,
+                     DataType data_type, std::string layer_name = "");
 
-    virtual ~BaseLayer() = default;
+  // -- 不带参数（权重）输入输出部分 --
+  // virtual void set_input(int32_t idx, const tensor::Tensor& input) = 0;
+
+  // virtual void set_output(int32_t idx, const tensor::Tensor& output) = 0;
+
+  // virtual size_t input_size() const = 0;
+
+  // virtual size_t output_size() const = 0;
+
+  // virtual base::Status check() const = 0;
+
+  // virtual tensor::Tensor& get_input(int32_t idx) = 0;
+
+  // virtual tensor::Tensor& get_output(int32_t idx) = 0;
+
+  // virtual const tensor::Tensor& get_input(int32_t idx) const = 0;
+
+  // virtual const tensor::Tensor& get_output(int32_t idx) const = 0;
 
 
 
+  // -- getters and setters --
 
-// 允许派生类访问基类的成员变量
-protected:
-  std::string layer_name_;
-  LayerType layer_type_ = LayerType::kLayerUnknown;
-  DataType data_type_ = DataType::kDataTypeUnknown;
+  DataType data_type() const;
+
+  LayerType layer_type() const;
+
+  DeviceType device_type() const; // 返回层的设备类型
+
+  const std::string& get_layer_name() const; // 返回层的名字
+
+  void set_layer_name(const std::string& layer_name); // 设置层的名称
+
+  void set_device_type(DeviceType device_type); // 设置层的设备类型
+
+ protected:
+  std::string layer_name_; // 层名
+  LayerType layer_type_ = LayerType::kLayerUnknown; // 层类型
+  DataType data_type_ = DataType::kDataTypeUnknown; // 层数据类型
   DeviceType device_type_ = DeviceType::kDeviceUnknown;
 };
-
 
 #endif// OP_LAYER_H

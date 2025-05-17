@@ -54,6 +54,7 @@ class CUDADeviceAllocator : public DeviceAllocator {
 
 class DeviceAllocatorSingleton {
  public:
+  // 创建实例，使用懒加载模式，确保只有一个实例被创建
   static std::shared_ptr<DeviceAllocator> getInstance(DeviceType device_type_) {
     if (device_type_ == DeviceType::kDeviceCPU) {
       if (!instance) {

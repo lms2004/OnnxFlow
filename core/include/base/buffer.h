@@ -12,11 +12,13 @@
  * 1. 强制通过 create() 创建对象，确保生命周期由 shared_ptr 管理
  * 2. 参数化构造逻辑，支持动态资源分配策略
  */
-class Buffer : public NoCopyable, public std::enable_shared_from_this<Buffer>{ // 每个基类前都要 public 继承
-public:
+class Buffer : public NoCopyable, public std::enable_shared_from_this<Buffer>{ // ptr is nullptr , allocator_ 非空，则分配内存
+public: // 每个基类前都要 public 继承
+
     ~Buffer();
 
     //  静态工厂函数：唯一创建入口
+    //      ptr is nullptr , allocator_ 非空，则分配内存
     static std::shared_ptr<Buffer> create(size_t byte_size, std::shared_ptr<DeviceAllocator> allocator, void* ptr,
                 bool use_external){
                     return std::shared_ptr<Buffer>(new Buffer(byte_size, allocator, ptr, use_external));
@@ -42,6 +44,7 @@ public:
     const void* ptr() const; // 适用于只读访问
     bool is_external() const;
     DeviceType device_type() const;
+    std::shared_ptr<DeviceAllocator> allocator() const;
 
     // --- setter func ---
 

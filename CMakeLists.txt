@@ -34,14 +34,29 @@ if (NOT CUDA_FOUND)
   message(FATAL_ERROR "CUDA 未找到！请确保 CUDA 已安装并可用。")
 endif()
 
-# 获取 base 目录下的所有源文件
-file(GLOB SOURCES CONFIGURE_DEPENDS "${ONNXFLOW_SOURCE_DIR}/base/*.cpp")
+# 获取 base 目录下的所有源文件（递归查找）
+file(GLOB_RECURSE SOURCES "${ONNXFLOW_SOURCE_DIR}/**/*.cpp")
+
+# --------------------------------- 递归收集头文件目录 ---------------------------------
+# 递归获取所有头文件并提取其所在目录
+file(GLOB_RECURSE HEADER_FILES 
+    "${ONNXFLOW_INCLUDE_DIR}/*.h" 
+    "${ONNXFLOW_INCLUDE_DIR}/*.hpp"
+    "${ONNXFLOW_INCLUDE_DIR}/*.cuh"  # 如果有 CUDA 头文件的话
+)
+# 提取目录路径并去重
+set(INCLUDE_DIRS "")
+foreach(header ${HEADER_FILES})
+    get_filename_component(dir ${header} DIRECTORY)
+    list(APPEND INCLUDE_DIRS ${dir})
+endforeach()
+list(REMOVE_DUPLICATES INCLUDE_DIRS)
 
 # --------------------------------- 主程序配置 ---------------------------------
 add_executable(ONNXFLOW main.cpp ${SOURCES})
 target_include_directories(ONNXFLOW
   PRIVATE
-    ${ONNXFLOW_INCLUDE_DIR}/base
+    ${INCLUDE_DIRS}  # 替换原来的 ${ONNXFLOW_INCLUDE_DIR}
     ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
 )
 target_link_libraries(ONNXFLOW PRIVATE ${CUDA_LIBRARIES})  # 新增这行
@@ -59,7 +74,7 @@ foreach(TEST_FILE ${TEST_SOURCES})
   add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
   target_include_directories(test_${TEST_NAME}
     PRIVATE
-      ${ONNXFLOW_INCLUDE_DIR}/base
+      ${INCLUDE_DIRS}  # 替换原来的 ${ONNXFLOW_INCLUDE_DIR}
       ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
   )
   target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
@@ -78,7 +93,7 @@ if(TEST_FUNC)
     add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
     target_include_directories(test_${TEST_NAME}
       PRIVATE
-        ${ONNXFLOW_INCLUDE_DIR}/base
+        ${INCLUDE_DIRS}  # 替换原来的 ${ONNXFLOW_INCLUDE_DIR}
         ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
     )
     target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
@@ -90,5 +105,3 @@ if(TEST_FUNC)
 else()
     message(STATUS "TEST_FUNC is disabled. Skipping test creation.")
 endif()
-
-
