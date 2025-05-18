@@ -5,10 +5,8 @@ project(ONNXFLOW)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Debug)  # 启用调试模式
-
-# set(TEST_FUNC ON)  # 启用测试 myfunc
-
+# 设置构建类型为 Debug（可以根据需要调整）
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 
 # 使用 FetchContent 下载 GoogleTest
 include(FetchContent)
@@ -20,88 +18,9 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)  # 兼容 Windows
 FetchContent_MakeAvailable(googletest)
 
-# --------------------------------- 设置路径 ---------------------------------
-set(ONNXFLOW_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core/include")
-set(ONNXFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core/source")
-set(ONNXFLOW_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
-
-# --------------------------------- 全局配置 ---------------------------------
-# 自动查找 CUDA 包
-find_package(CUDA)
-
-# 如果没有找到 CUDA，退出并显示错误
-if (NOT CUDA_FOUND)
-  message(FATAL_ERROR "CUDA 未找到！请确保 CUDA 已安装并可用。")
-endif()
-
-# 获取 base 目录下的所有源文件（递归查找）
-file(GLOB_RECURSE SOURCES "${ONNXFLOW_SOURCE_DIR}/**/*.cpp")
-
-# --------------------------------- 递归收集头文件目录 ---------------------------------
-# 递归获取所有头文件并提取其所在目录
-file(GLOB_RECURSE HEADER_FILES 
-    "${ONNXFLOW_INCLUDE_DIR}/*.h" 
-    "${ONNXFLOW_INCLUDE_DIR}/*.hpp"
-    "${ONNXFLOW_INCLUDE_DIR}/*.cuh"  # 如果有 CUDA 头文件的话
-)
-# 提取目录路径并去重
-set(INCLUDE_DIRS "")
-foreach(header ${HEADER_FILES})
-    get_filename_component(dir ${header} DIRECTORY)
-    list(APPEND INCLUDE_DIRS ${dir})
-endforeach()
-list(REMOVE_DUPLICATES INCLUDE_DIRS)
-
-# --------------------------------- 主程序配置 ---------------------------------
-add_executable(ONNXFLOW main.cpp ${SOURCES})
-target_include_directories(ONNXFLOW
-  PRIVATE
-    ${INCLUDE_DIRS}  # 替换原来的 ${ONNXFLOW_INCLUDE_DIR}
-    ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
-)
-target_link_libraries(ONNXFLOW PRIVATE ${CUDA_LIBRARIES})  # 新增这行
-
-# --------------------------------- 测试程序配置 ---------------------------------
+# 启用测试
 enable_testing()
 
-# 获取 test 目录下的所有 .cpp 文件
-file(GLOB TEST_SOURCES "${ONNXFLOW_TEST_DIR}/*.cpp")
-file(GLOB TEST_MYFUNC_SOURCES "${ONNXFLOW_TEST_DIR}/test_func/*.cpp")
-
-# 为每个测试文件创建一个独立的测试可执行文件
-foreach(TEST_FILE ${TEST_SOURCES})
-  get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
-  add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
-  target_include_directories(test_${TEST_NAME}
-    PRIVATE
-      ${INCLUDE_DIRS}  # 替换原来的 ${ONNXFLOW_INCLUDE_DIR}
-      ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
-  )
-  target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
-
-  # 自动发现并注册测试用例
-  include(GoogleTest)
-  gtest_discover_tests(test_${TEST_NAME})
-endforeach()
-
-
-# 判断 TEST_FUNC 是否启用
-if(TEST_FUNC)
-  # 为每个 test_func 目录下的测试文件创建一个独立的测试可执行文件
-  foreach(TEST_FILE ${TEST_MYFUNC_SOURCES})
-    get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
-    add_executable(test_${TEST_NAME} ${TEST_FILE} ${SOURCES})
-    target_include_directories(test_${TEST_NAME}
-      PRIVATE
-        ${INCLUDE_DIRS}  # 替换原来的 ${ONNXFLOW_INCLUDE_DIR}
-        ${CUDA_INCLUDE_DIRS}  # 自动设置 CUDA 头文件目录
-    )
-    target_link_libraries(test_${TEST_NAME} PRIVATE ${CUDA_LIBRARIES} GTest::gtest_main)
-
-    # 自动发现并注册测试用例
-    include(GoogleTest)
-    gtest_discover_tests(test_${TEST_NAME})
-  endforeach()
-else()
-    message(STATUS "TEST_FUNC is disabled. Skipping test creation.")
-endif()
+# 包含子目录的 CMakeLists.txt
+add_subdirectory(core)
+add_subdirectory(test)

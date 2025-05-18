@@ -8,5 +8,5 @@ int main(){
     std::shared_ptr<DeviceAllocator> allocator = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
     
     // 分配零字节内存
-    void* ptr = allocator->allocate(100);
+    void* ptr = allocator->allocate(-1);
 }
