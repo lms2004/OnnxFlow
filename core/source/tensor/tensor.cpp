@@ -224,6 +224,17 @@ void Tensor::to_cpu() {
   }
 }
 
+Tensor Tensor::clone() const {
+  Tensor new_tensor = *this; // 赋值成员变量
+
+  // 分配新的 buffer
+  size_t byte_size = this->byte_size();
+
+  auto allocator = buffer_->allocator();
+  new_tensor.buffer_ = Buffer::create(byte_size, allocator, nullptr, false);
+  new_tensor.buffer_->copy_from(buffer_.get());
+  return new_tensor;
+}
 
 
 // ----------- Constructor ------------------

@@ -205,7 +205,7 @@ TEST(test_tensor, clone_cuda) {
   delete[] p2;
 }
 
-
+*/
 TEST(test_tensor, clone_cpu) {
   auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
   Tensor t1_cpu(DataType::kDataTypeFp32, 32, 32, true, alloc_cpu);
@@ -227,7 +227,7 @@ TEST(test_tensor, clone_cpu) {
   }
   delete[] p2;
 }
-*/
+
 
 TEST(test_tensor, to_cu) {
   auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);

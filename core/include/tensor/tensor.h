@@ -49,6 +49,7 @@ public:
     void to_cuda(cudaStream_t stream = nullptr);
     void to_cpu();
     
+    Tensor clone() const;
     // ----------- template func -----------
     template <typename T>
     T* ptr();
