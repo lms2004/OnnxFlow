@@ -1,8 +1,8 @@
 #include "alloc.h"
 
 
-std::shared_ptr<DeviceAllocator> DeviceAllocatorSingleton::instance = nullptr;
-
+std::shared_ptr<DeviceAllocator> DeviceAllocatorSingleton::cpu_instance = nullptr;
+std::shared_ptr<DeviceAllocator> DeviceAllocatorSingleton::cuda_instance = nullptr;
 
 
 void DeviceAllocator::memcpy(const void* src_ptr, void* dest_ptr, size_t byte_size,

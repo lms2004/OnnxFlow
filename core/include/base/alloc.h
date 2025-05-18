@@ -60,17 +60,20 @@ class DeviceAllocatorSingleton {
   // 创建实例，使用懒加载模式，确保只有一个实例被创建
   static std::shared_ptr<DeviceAllocator> getInstance(DeviceType device_type_) {
     if (device_type_ == DeviceType::kDeviceCPU) {
-      if (!instance) {
-        instance = std::make_shared<CPUAllocator>();
+      if (!cpu_instance) {
+        cpu_instance = std::make_shared<CPUAllocator>();
       }
+      return cpu_instance;
     } else if (device_type_ == DeviceType::kDeviceCUDA) {
-      if (!instance) {
-        instance = std::make_shared<CUDADeviceAllocator>();
+      if (!cuda_instance) {
+        cuda_instance = std::make_shared<CUDADeviceAllocator>();
       }
+      return cuda_instance;
     }
-    return instance;
+    return nullptr;  // 返回 nullptr 如果设备类型未知
   }
 
  private:
-  static std::shared_ptr<DeviceAllocator> instance;
+  static std::shared_ptr<DeviceAllocator> cpu_instance;
+  static std::shared_ptr<DeviceAllocator> cuda_instance;
 };

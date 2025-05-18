@@ -48,6 +48,25 @@ public:
 
     void to_cuda(cudaStream_t stream = nullptr);
     void to_cpu();
+    
+    // ----------- template func -----------
+    template <typename T>
+    T* ptr();
+
+    template <typename T>
+    const T* ptr() const;
+
+    template <typename T>
+    T* ptr(int64_t index);
+
+    template <typename T>
+    const T* ptr(int64_t index) const;
+
+    template <typename T>
+    T& index(int64_t offset);
+
+    template <typename T>
+    const T& index(int64_t offset) const;
 
     // -------- getter func --------
     size_t size() const;
@@ -79,3 +98,47 @@ private:
     
     DataType data_type_ = DataType::kDataTypeUnknown; 
 };
+
+template <typename T>
+T& Tensor::index(int64_t offset) {
+  Assert(offset < this->size() && offset >= 0, "Index out of bounds");
+  T& val = *(reinterpret_cast<T*>(buffer_->ptr()) + offset);
+  return val;
+}
+
+template <typename T>
+const T& Tensor::index(int64_t offset) const {
+  Assert(offset < this->size() && offset >= 0, "Index out of bounds");
+  const T& val = *(reinterpret_cast<T*>(buffer_->ptr()) + offset);
+  return val;
+}
+
+template <typename T>
+const T* Tensor::ptr() const {
+  if (!buffer_) {
+    return nullptr;
+  }
+  return const_cast<const T*>(reinterpret_cast<T*>(buffer_->ptr()));
+}
+
+template <typename T>
+T* Tensor::ptr() {
+  if (!buffer_) {
+    return nullptr;
+  }
+  return reinterpret_cast<T*>(buffer_->ptr());
+}
+
+template <typename T>
+T* Tensor::ptr(int64_t index) {
+    Assert(buffer_ != nullptr && buffer_->ptr() != nullptr, 
+           "The data area buffer of this tensor is empty or it points to a null pointer.");
+    return const_cast<T*>(reinterpret_cast<const T*>(buffer_->ptr())) + index;
+}
+
+template <typename T>
+const T* Tensor::ptr(int64_t index) const {
+    Assert(buffer_ != nullptr && buffer_->ptr() != nullptr, 
+           "The data area buffer of this tensor is empty or it points to a null pointer.");
+    return reinterpret_cast<const T*>(buffer_->ptr()) + index;
+}

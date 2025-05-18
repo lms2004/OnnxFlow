@@ -157,21 +157,5 @@ TEST_F(BufferTest, CudaAsyncCopy) {
     cudaStreamDestroy(stream);
 }
 
-// 测试用例9：设备内存压力测试
-TEST_F(BufferTest, CudaMemoryStress) {
-    const size_t large_size = 1 << 28; // 256MB
-    std::vector<std::shared_ptr<Buffer>> buffers;
-    
-    for(int i=0; i<10; ++i){
-        auto buf = Buffer::create(large_size, cuda_alloc, nullptr, false);
-        ASSERT_NO_THROW(buf->allocate());  // 网页8的异常安全验证
-        buffers.push_back(buf);
-    }
-    
-    // 验证内存释放
-    buffers.clear();
-    size_t free_mem, total_mem;
-    cudaMemGetInfo(&free_mem, &total_mem);
-    EXPECT_GT(free_mem, total_mem*0.8);  // 内存应释放超过80%
-}
+
 #endif

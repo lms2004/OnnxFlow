@@ -161,3 +161,136 @@ TEST(TensorTest, ElementAccess) {
     EXPECT_FLOAT_EQ(data[1], 3.14f);
 }
 
+/*
+TEST(test_tensor, to_cpu) {
+  auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
+  Tensor t1_cu(DataType::kDataTypeFp32, 32, 32, true, alloc_cu);
+  ASSERT_EQ(t1_cu.is_empty(), false);
+//   set_value_cu(t1_cu.ptr<float>(), 32 * 32);
+
+  t1_cu.to_cpu();
+  ASSERT_EQ(t1_cu.device_type(), DeviceType::kDeviceCPU);
+  float* cpu_ptr = t1_cu.ptr<float>();
+  for (int i = 0; i < 32 * 32; ++i) {
+    ASSERT_EQ(*(cpu_ptr + i), 1.f);
+  }
+}
+
+TEST(test_tensor, clone_cuda) {
+  auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
+  Tensor t1_cu(DataType::kDataTypeFp32, 32, 32, true, alloc_cu);
+  ASSERT_EQ(t1_cu.is_empty(), false);
+  set_value_cu(t1_cu.ptr<float>(), 32 * 32, 1.f);
+
+  Tensor t2_cu = t1_cu.clone();
+  float* p2 = new float[32 * 32];
+  cudaMemcpy(p2, t2_cu.ptr<float>(), sizeof(float) * 32 * 32, cudaMemcpyDeviceToHost);
+  for (int i = 0; i < 32 * 32; ++i) {
+    ASSERT_EQ(p2[i], 1.f);
+  }
+
+  cudaMemcpy(p2, t1_cu.ptr<float>(), sizeof(float) * 32 * 32, cudaMemcpyDeviceToHost);
+  for (int i = 0; i < 32 * 32; ++i) {
+    ASSERT_EQ(p2[i], 1.f);
+  }
+
+  ASSERT_EQ(t2_cu.data_type(), DataType::kDataTypeFp32);
+  ASSERT_EQ(t2_cu.size(), 32 * 32);
+
+  t2_cu.to_cpu();
+  Memcpy(p2, t2_cu.ptr<float>(), sizeof(float) * 32 * 32);
+  for (int i = 0; i < 32 * 32; ++i) {
+    ASSERT_EQ(p2[i], 1.f);
+  }
+  delete[] p2;
+}
+
+
+TEST(test_tensor, clone_cpu) {
+  auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
+  Tensor t1_cpu(DataType::kDataTypeFp32, 32, 32, true, alloc_cpu);
+  ASSERT_EQ(t1_cpu.is_empty(), false);
+  for (int i = 0; i < 32 * 32; ++i) {
+    t1_cpu.index<float>(i) = 1.f;
+  }
+
+  Tensor t2_cpu = t1_cpu.clone();
+  float* p2 = new float[32 * 32];
+  Memcpy(p2, t2_cpu.ptr<float>(), sizeof(float) * 32 * 32);
+  for (int i = 0; i < 32 * 32; ++i) {
+    ASSERT_EQ(p2[i], 1.f);
+  }
+
+  Memcpy(p2, t1_cpu.ptr<float>(), sizeof(float) * 32 * 32);
+  for (int i = 0; i < 32 * 32; ++i) {
+    ASSERT_EQ(p2[i], 1.f);
+  }
+  delete[] p2;
+}
+*/
+
+TEST(test_tensor, to_cu) {
+  auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
+  Tensor t1_cpu(DataType::kDataTypeFp32, 32, 32, true, alloc_cpu);
+  ASSERT_EQ(t1_cpu.is_empty(), false);
+  float* p1 = t1_cpu.ptr<float>();
+  for (int i = 0; i < 32 * 32; ++i) {
+    *(p1 + i) = 1.f;
+  }
+
+
+  t1_cpu.to_cuda(nullptr);
+  float* p2 = new float[32 * 32];
+  cudaMemcpy(p2, t1_cpu.ptr<float>(), sizeof(float) * 32 * 32, cudaMemcpyDeviceToHost);
+  for (int i = 0; i < 32 * 32; ++i) {
+    ASSERT_EQ(*(p2 + i), 1.f);
+  }
+  delete[] p2;
+}
+
+TEST(test_tensor, init1) {
+  auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
+
+  int32_t size = 32 * 151;
+
+  Tensor t1(DataType::kDataTypeFp32, size, true, alloc_cu);
+  ASSERT_EQ(t1.is_empty(), false);
+}
+
+TEST(test_tensor, init3) {
+  float* ptr = new float[32];
+  ptr[0] = 31;
+  Tensor t1(DataType::kDataTypeFp32, 32, false, nullptr, ptr);
+  ASSERT_EQ(t1.is_empty(), false);
+  ASSERT_EQ(t1.ptr<float>(), ptr);
+  ASSERT_EQ(*t1.ptr<float>(), 31);
+}
+
+TEST(test_tensor, init2) {
+  auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
+
+  int32_t size = 32 * 151;
+
+  Tensor t1(DataType::kDataTypeFp32, size, false, alloc_cu);
+  ASSERT_EQ(t1.is_empty(), true);
+}
+
+TEST(test_tensor, assign1) {
+  auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
+  Tensor t1_cpu(DataType::kDataTypeFp32, 32, 32, true, alloc_cpu);
+  ASSERT_EQ(t1_cpu.is_empty(), false);
+
+  int32_t size = 32 * 32;
+  float* ptr = new float[size];
+  for (int i = 0; i < size; ++i) {
+    ptr[i] = float(i);
+  }
+  std::shared_ptr<Buffer> buffer = Buffer::create(size * sizeof(float), alloc_cpu, nullptr, true);
+
+  buffer->set_device_type(DeviceType::kDeviceCPU);
+
+  ASSERT_EQ(t1_cpu.assign(buffer), true);
+  ASSERT_EQ(t1_cpu.is_empty(), false);
+  ASSERT_NE(t1_cpu.ptr<float>(), nullptr);
+  delete[] ptr;
+}

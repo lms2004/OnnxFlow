@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/build/test_test_tensor",
+            "program": "${workspaceRoot}/build/test_test_alloc",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
