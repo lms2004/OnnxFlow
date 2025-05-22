@@ -18,9 +18,10 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)  # 兼容 Windows
 FetchContent_MakeAvailable(googletest)
 
-# 启用测试
-enable_testing()
-
 # 包含子目录的 CMakeLists.txt
 add_subdirectory(core)
 add_subdirectory(test)
+
+
+# 启用测试
+enable_testing()

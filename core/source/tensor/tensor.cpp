@@ -64,7 +64,13 @@ void Tensor::set_device_type(DeviceType device_type) const {
     Assert(this->buffer_, "Tensor::set_device_type: buffer_ is nullptr");
     this->buffer_->set_device_type(device_type);
 }
-
+void Tensor::set_data_type(DataType data_type) {
+    this->data_type_ = data_type;
+}
+void Tensor::set_dims(const std::vector<int32_t>& dims) {
+    this->dims_ = dims;
+    this->size_ = reduce_dimension(dims.begin(), dims.end(), 1);
+}
 
 
 // ------------------ core functions ------------------

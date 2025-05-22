@@ -88,6 +88,8 @@ public:
     
     // --------- setter func ---------
     void set_device_type(DeviceType device_type) const;
+    void set_data_type(DataType data_type);
+    void set_dims(const std::vector<int32_t>& dims);
 
 
 private:

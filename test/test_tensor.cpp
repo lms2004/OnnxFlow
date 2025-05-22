@@ -162,7 +162,7 @@ TEST(TensorTest, ElementAccess) {
 }
 
 /*
-TEST(test_tensor, to_cpu) {
+TEST(TensorTest, to_cpu) {
   auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
   Tensor t1_cu(DataType::kDataTypeFp32, 32, 32, true, alloc_cu);
   ASSERT_EQ(t1_cu.is_empty(), false);
@@ -176,7 +176,7 @@ TEST(test_tensor, to_cpu) {
   }
 }
 
-TEST(test_tensor, clone_cuda) {
+TEST(TensorTest, clone_cuda) {
   auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
   Tensor t1_cu(DataType::kDataTypeFp32, 32, 32, true, alloc_cu);
   ASSERT_EQ(t1_cu.is_empty(), false);
@@ -206,7 +206,7 @@ TEST(test_tensor, clone_cuda) {
 }
 
 */
-TEST(test_tensor, clone_cpu) {
+TEST(TensorTest, clone_cpu) {
   auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
   Tensor t1_cpu(DataType::kDataTypeFp32, 32, 32, true, alloc_cpu);
   ASSERT_EQ(t1_cpu.is_empty(), false);
@@ -229,7 +229,7 @@ TEST(test_tensor, clone_cpu) {
 }
 
 
-TEST(test_tensor, to_cu) {
+TEST(TensorTest, to_cu) {
   auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
   Tensor t1_cpu(DataType::kDataTypeFp32, 32, 32, true, alloc_cpu);
   ASSERT_EQ(t1_cpu.is_empty(), false);
@@ -248,7 +248,7 @@ TEST(test_tensor, to_cu) {
   delete[] p2;
 }
 
-TEST(test_tensor, init1) {
+TEST(TensorTest, init1) {
   auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
 
   int32_t size = 32 * 151;
@@ -257,7 +257,7 @@ TEST(test_tensor, init1) {
   ASSERT_EQ(t1.is_empty(), false);
 }
 
-TEST(test_tensor, init3) {
+TEST(TensorTest, init3) {
   float* ptr = new float[32];
   ptr[0] = 31;
   Tensor t1(DataType::kDataTypeFp32, 32, false, nullptr, ptr);
@@ -266,7 +266,7 @@ TEST(test_tensor, init3) {
   ASSERT_EQ(*t1.ptr<float>(), 31);
 }
 
-TEST(test_tensor, init2) {
+TEST(TensorTest, init2) {
   auto alloc_cu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCUDA);
 
   int32_t size = 32 * 151;
@@ -275,7 +275,7 @@ TEST(test_tensor, init2) {
   ASSERT_EQ(t1.is_empty(), true);
 }
 
-TEST(test_tensor, assign1) {
+TEST(TensorTest, assign1) {
   auto alloc_cpu = DeviceAllocatorSingleton::getInstance(DeviceType::kDeviceCPU);
   Tensor t1_cpu(DataType::kDataTypeFp32, 32, 32, true, alloc_cpu);
   ASSERT_EQ(t1_cpu.is_empty(), false);
