@@ -76,21 +76,24 @@ class LayerParam : public Layer {
  public:
     explicit LayerParam(DeviceType device_type, LayerType layer_type,
                      DataType data_type, std::string layer_name = "", bool is_quant_layer = false);
-      
+    
+    // --------- core func of LayerParam ---------
     void forward() override;
 
-    // --------- getter and setter func of weight ---------
+    // --------- getter func of weight ---------
     size_t weight_size() const;
-    void reset_weight_size(size_t size);
 
     Tensor& get_weight(int32_t idx);
     const Tensor& get_weight(int32_t idx) const;
+    
+    bool is_quant_layer() const;
 
+    // --------- setter func of weight ---------
     void set_weight(int32_t idx, const Tensor& weight);
     // void set_weight(int32_t idx, const std::vector<int32_t>& dims, const void* weight_ptr,
     //                         DeviceType device_type = DeviceType::kDeviceUnknown);
 
-
+    void reset_weight_size(int size);
  protected:
     bool is_quant_layer_ = false;
     std::vector<Tensor> weights_;

@@ -242,6 +242,24 @@ Tensor Tensor::clone() const {
   return new_tensor;
 }
 
+// ------------------ operator func ------------------
+bool Tensor::operator==(const Tensor& tensor) {
+  if (this->data_type_ != tensor.data_type_) {
+    return false;
+  }
+  if (this->dims_ != tensor.dims_) {
+    return false;
+  }
+  if (this->size_ != tensor.size_) {
+    return false;
+  }
+  if (this->buffer_->ptr() != tensor.buffer_->ptr()) {
+    return false;
+  }
+
+  return true;
+}
+
 
 // ----------- Constructor ------------------
 

@@ -50,6 +50,12 @@ public:
     void to_cpu();
     
     Tensor clone() const;
+    
+
+    // ----------- operator func -----------
+    bool operator==(const Tensor& tensor);
+
+
     // ----------- template func -----------
     template <typename T>
     T* ptr();

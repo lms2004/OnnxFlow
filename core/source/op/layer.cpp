@@ -1,6 +1,7 @@
 #include "layer.h"
 #include "base.h"
 
+static Tensor default_tensor;  // 返回一个静态的默认 Tensor
 
 /* --------------  BaseLayer class -------------- */
 BaseLayer::BaseLayer(DeviceType device_type, LayerType layer_type,
@@ -51,15 +52,7 @@ void Layer::forward() {
 }
 
 
-// ----------- getter and setter func of Layer -----------
-void Layer::set_input(int32_t idx, const Tensor& input) {
-    inputs_[idx] = input;
-}
-
-void Layer::set_output(int32_t idx, const Tensor& output) {
-    outputs_[idx] = output;
-}
-
+// -- getter func of Layer --
 const Tensor& Layer::get_input(int32_t idx) const {
     return inputs_[idx];
 }
@@ -84,12 +77,22 @@ size_t Layer::output_size() const {
     return outputs_.size();
 }
 
+// -- setter func of Layer --
 void Layer::reset_input_size(size_t size) {
     inputs_.resize(size);
 }
 
 void Layer::reset_output_size(size_t size) {
     outputs_.resize(size);
+}
+
+
+void Layer::set_input(int32_t idx, const Tensor& input) {
+    inputs_[idx] = input;
+}
+
+void Layer::set_output(int32_t idx, const Tensor& output) {
+    outputs_[idx] = output;
 }
 
 
@@ -106,25 +109,55 @@ void LayerParam::forward() {
 }
 
 
-//  getter and setter func of LayerParam
+//  getter func of LayerParam
 size_t LayerParam::weight_size() const {
     return weights_.size();
 }
 
-void LayerParam::reset_weight_size(size_t size) {
-    weights_.resize(size);
-}
-
 Tensor& LayerParam::get_weight(int32_t idx) {
+    if(idx < 0 || idx >= weights_.size()) {
+        Error("LayerParam::get_weight: index out of bounds");
+        return default_tensor;  // 如果索引越界，返回默认 Tensor
+    }
     return weights_[idx];
 }
 
 const Tensor& LayerParam::get_weight(int32_t idx) const {
+    if(idx < 0 || idx >= weights_.size()) {
+        Error("LayerParam::get_weight: index out of bounds");
+        return default_tensor;  // 如果索引越界，返回默认 Tensor
+    }
     return weights_[idx];
 }
 
+bool LayerParam::is_quant_layer() const {
+    return is_quant_layer_;
+}
+
+// setter func of LayerParam
 void LayerParam::set_weight(int32_t idx, const Tensor& weight) {
+    if(idx < 0 || idx >= weights_.size()) {
+        Error("LayerParam::set_weight: index out of bounds");
+        return;
+    }
+    if(weight.data_type() != data_type_) {
+        Error("LayerParam::set_weight: weight data type mismatch");
+        return;
+    }
+    if(weight.device_type() != device_type_) {
+        Error("LayerParam::set_weight: weight device type mismatch");
+        return;
+    }
     weights_[idx] = weight;
 }
+
+void LayerParam::reset_weight_size(int size) {
+    if(size >= 0) {
+        weights_.resize(size);
+    }else{
+        Error("LayerParam::reset_weight_size: size must be >= 0");
+    }
+}
+
 
 
