@@ -54,19 +54,35 @@ void Layer::forward() {
 
 // -- getter func of Layer --
 const Tensor& Layer::get_input(int32_t idx) const {
-    return inputs_[idx];
+    if(idx < 0 || idx >= inputs_.size()) {
+        Error("Layer::get_input: index out of bounds");
+        return default_tensor;  // 如果索引越界，返回默认 Tensor
+    }
+    return inputs_.at(idx);
 }
 
 const Tensor& Layer::get_output(int32_t idx) const {
-    return outputs_[idx];
+    if(idx < 0 || idx >= outputs_.size()) {
+        Error("Layer::get_output: index out of bounds");
+        return default_tensor;  // 如果索引越界，返回默认 Tensor
+    }
+    return outputs_.at(idx);
 }
 
 Tensor& Layer::get_input(int32_t idx) {
-    return inputs_[idx];
+    if(idx < 0 || idx >= inputs_.size()) {
+        Error("Layer::get_input: index out of bounds");
+        return default_tensor;  // 如果索引越界，返回默认 Tensor
+    }
+    return inputs_.at(idx);
 }
 
 Tensor& Layer::get_output(int32_t idx) {
-    return outputs_[idx];
+    if(idx < 0 || idx >= outputs_.size()) {
+        Error("Layer::get_output: index out of bounds");
+        return default_tensor;  // 如果索引越界，返回默认 Tensor
+    }
+    return outputs_.at(idx);
 }
 
 size_t Layer::input_size() const {
@@ -78,21 +94,37 @@ size_t Layer::output_size() const {
 }
 
 // -- setter func of Layer --
-void Layer::reset_input_size(size_t size) {
+void Layer::reset_input_size(int size) {
+    if(size < 0) {
+        Error("Layer::reset_input_size: size must be >= 0");
+        return;
+    }
     inputs_.resize(size);
 }
 
-void Layer::reset_output_size(size_t size) {
+void Layer::reset_output_size(int size) {
+    if(size < 0) {
+        Error("Layer::reset_output_size: size must be >= 0");
+        return;
+    }
     outputs_.resize(size);
 }
 
 
 void Layer::set_input(int32_t idx, const Tensor& input) {
-    inputs_[idx] = input;
+    if(idx < 0 || idx >= inputs_.size()) {
+        Error("Layer::set_input: index out of bounds");
+        return;
+    }
+    inputs_.at(idx) = input;
 }
 
 void Layer::set_output(int32_t idx, const Tensor& output) {
-    outputs_[idx] = output;
+    if(idx < 0 || idx >= outputs_.size()) {
+        Error("Layer::set_output: index out of bounds");
+        return;
+    }
+    outputs_.at(idx) = output;
 }
 
 
@@ -119,7 +151,7 @@ Tensor& LayerParam::get_weight(int32_t idx) {
         Error("LayerParam::get_weight: index out of bounds");
         return default_tensor;  // 如果索引越界，返回默认 Tensor
     }
-    return weights_[idx];
+    return weights_.at(idx);
 }
 
 const Tensor& LayerParam::get_weight(int32_t idx) const {
@@ -127,7 +159,7 @@ const Tensor& LayerParam::get_weight(int32_t idx) const {
         Error("LayerParam::get_weight: index out of bounds");
         return default_tensor;  // 如果索引越界，返回默认 Tensor
     }
-    return weights_[idx];
+    return weights_.at(idx);
 }
 
 bool LayerParam::is_quant_layer() const {
@@ -148,15 +180,15 @@ void LayerParam::set_weight(int32_t idx, const Tensor& weight) {
         Error("LayerParam::set_weight: weight device type mismatch");
         return;
     }
-    weights_[idx] = weight;
+    weights_.at(idx) = weight;
 }
 
 void LayerParam::reset_weight_size(int size) {
-    if(size >= 0) {
-        weights_.resize(size);
-    }else{
+    if(size < 0) {
         Error("LayerParam::reset_weight_size: size must be >= 0");
+        return;
     }
+    weights_.resize(size);
 }
 
 

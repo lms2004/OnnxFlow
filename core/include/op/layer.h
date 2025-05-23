@@ -63,8 +63,8 @@ class Layer : public BaseLayer {
   size_t input_size() const;
   size_t output_size() const;
 
-  void reset_input_size(size_t size);
-  void reset_output_size(size_t size);
+  void reset_input_size(int size);
+  void reset_output_size(int size);
 
  protected:
   std::vector<Tensor> inputs_;
