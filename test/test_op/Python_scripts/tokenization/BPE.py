@@ -86,7 +86,11 @@ def measure_token_length(token):
     return len(token[:-4]) + 1 if token.endswith('</w>') else len(token)
 
 def sort_tokens(tokens_freq):
-    """按长度和频率排序词元"""
+    """
+    排序优先级
+        1. 长度更长的词元会排在前面；
+        2. 若长度相同，则频率更高的词元排在前面
+    """
     return [token for token, _ in sorted(
         tokens_freq.items(), 
         key=lambda x: (measure_token_length(x[0]), x[1]), 
@@ -94,7 +98,11 @@ def sort_tokens(tokens_freq):
     )]
 
 def tokenize_word(word, sorted_tokens, unknown_token='</u>'):
-    """递归实现基于BPE词表的分词"""
+    """
+        通过贪心匹配策略
+        1. 输入单词 -> 词表中存在的子词
+        2. 无法匹配 -> 未知标记填充
+    """
     if not word:
         return []
     if not sorted_tokens:
@@ -157,6 +165,8 @@ if __name__ == "__main__":
         print(f"\n测试句子: {sentence}")
         for word in sentence.split():
             processed_word = word + '</w>'
+
+            # 单词在映射表中，直接映射
             if processed_word in tokenization_map:
                 tokens = tokenization_map[processed_word]
             else:
