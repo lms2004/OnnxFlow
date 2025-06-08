@@ -28,7 +28,7 @@ class MyMultiHeadAttention_(torch.nn.Module):
         batch_size = hidden_state.size()[0]
         
         """
-        拼接权重矩阵 W_Q = [W_Q1 ... W_Qh] -> 全连接层
+        拼接权重矩阵 W_Q = [W_Q1 ... W_Qh] -> 全连接层( 可学习参数 )
         
         eg.
             输入 X (batch_size, seq_len, d_model) 
@@ -62,6 +62,10 @@ class MyMultiHeadAttention_(torch.nn.Module):
         """
         attention_scores = torch.matmul(query, key.transpose(-1, -2)) / torch.sqrt(torch.tensor(self.head_dim))
         
+        """
+        掩码注意力
+        -> 需要隐藏掉的元素会由 一个极小值 -1e9 替代
+        """
         if attention_mask != None:
             attention_scores += attention_mask * -1e9
         
